@@ -1,0 +1,7 @@
+
+:80 {
+    root * /usr/share/caddy
+    reverse_proxy /api/* localhost:9000
+    file_server
+}
+

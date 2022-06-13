@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  webapp:
+    image: caddy
+    ports:
+      - 80:80
+      - 443:433
+    volumes:
+      - ./Website:/usr/share/caddy/
+      - ./Caddy/caddy-data:/data
+      - ./Caddy/caddy-config:/config
+      - ./Caddy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+         - db  
+  api:
+    image: golang:1.17
+    ports:
+      - 9000:9000
+    volumes:
+      - ./api:/usr/src/app
+    command: bash -c "cd /usr/src/app && go mod tidy && go mod download && go mod verify && go build -v -o /usr/local/bin/app ./cmd/api && app && echo executed"
+    depends_on:
+      - db
+  db:
+    image: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - ./Db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=fruittracker
+      - MYSQL_USER=fruittracker
+      - MYSQL_PASSWORD=fruittracker
