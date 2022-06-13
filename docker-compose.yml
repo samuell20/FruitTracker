@@ -17,7 +17,7 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ./api:/usr/src/app
+      - ./Api:/usr/src/app
     command: bash -c "cd /usr/src/app && go mod tidy && go mod download && go mod verify && go build -v -o /usr/local/bin/app ./cmd/api && app && echo executed"
     depends_on:
       - db
