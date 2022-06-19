@@ -2,10 +2,7 @@ module github.com/samuell20/FruitTracker
 
 go 1.17
 
-require (
-	github.com/gin-gonic/gin v1.7.7
-	github.com/joho/godotenv v1.4.0
-)
+require github.com/gin-gonic/gin v1.7.7
 
 require github.com/huandu/xstrings v1.3.2 // indirect
 

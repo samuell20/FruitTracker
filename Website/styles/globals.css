@@ -55,8 +55,16 @@ footer{
 }
 
 /* Main content */ 
-main{
+.main-content{
   width: 80%;
   margin:0 auto;
   padding: 50px 0px;
+}
+
+
+
+/* HELPERS */
+.w-80{
+  width: 80%;
+  margin: 0 auto;
 }

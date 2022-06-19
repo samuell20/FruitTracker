@@ -55,13 +55,13 @@ func Run() error {
 
 type config struct {
 	// Server configuration
-	Host            string        `default:"localhost"`
-	Port            uint          `default:"4000"`
+	Host            string        `default:"0.0.0.0"`
+	Port            uint          `default:"9000"`
 	ShutdownTimeout time.Duration `default:"10s"`
 	// Database configuration
 	DbUser    string        `default:"fruittracker"`
 	DbPass    string        `default:"fruittracker"`
-	DbHost    string        `default:"localhost"`
+	DbHost    string        `default:"db"`
 	DbPort    uint          `default:"3306"`
 	DbName    string        `default:"fruittracker"`
 	DbTimeout time.Duration `default:"5s"`

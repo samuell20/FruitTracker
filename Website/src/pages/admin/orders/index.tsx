@@ -4,7 +4,7 @@ import type { NextPage } from 'next'
 const Orders: NextPage = () => {
   return (
      <div>
-       <h1>Orders</h1>
+       <h1>Pedidos</h1>
      </div> 
   )
 }

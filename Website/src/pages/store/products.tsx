@@ -19,7 +19,7 @@ const Products: NextPage = ({product_data}:any) => {
 
     ))
   return (
-     <div>
+     <div className="main-content">
        <h1>Productos</h1>
        <div className="d-flex flex-wrap justify-content-between">
          {products}

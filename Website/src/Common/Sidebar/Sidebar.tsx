@@ -10,56 +10,42 @@ const Sidebar = () => {
             </Link>
             <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
                 <li className="nav-item">
-                    <Link href="dashboard" >
+                    <Link href="/admin/dashboard" >
                         <a className="nav-link px-0 align-middle">
                             <i className="fs-4 bi-speedometer2"></i> <span className="ms-1 d-none d-sm-inline">Panel de control</span> 
                         </a>
                     </Link> 
                 </li>
                 <li className="nav-item">
-                    <Link href="users">
+                    <Link href="/admin/users">
                         <a className="nav-link align-middle px-0">
                             <i className="fs-4 bi bi-people"></i> <span className="ms-1 d-none d-sm-inline">Usuarios</span>
                         </a>
                     </Link>
                 </li> 
                 <li className="nav-item">
-                    <Link href="orders" >
+                    <Link href="/admin/orders" >
                         <a className="nav-link align-middle px-0">
                             <i className="fs-4 bi bi-card-checklist"></i> <span className="ms-1 d-none d-sm-inline">Pedidos</span>
                         </a>
                     </Link>
                 </li> 
                 <li className="nav-item">
-                    <Link href="products">
-                        <a data-bs-toggle="collapse" className="nav-link px-0 align-middle">
+                    <Link href="/admin/products">
+                        <a className="nav-link px-0 align-middle ">
                             <i className="fs-4 bi bi-box"></i> <span className="ms-1 d-none d-sm-inline">Productos</span> 
                         </a>
-                    </Link>
-                    <ul className="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
-                        <li className="w-100">
-                            <a href="#" className="nav-link px-0"> <span className="d-none d-sm-inline">Product</span> 1</a>
-                        </li>
-                        <li>
-                            <a href="#" className="nav-link px-0"> <span className="d-none d-sm-inline">Product</span> 2</a>
-                        </li>
-                        <li>
-                            <a href="#" className="nav-link px-0"> <span className="d-none d-sm-inline">Product</span> 3</a>
-                        </li>
-                        <li>
-                            <a href="#" className="nav-link px-0"> <span className="d-none d-sm-inline">Product</span> 4</a>
-                        </li>
-                    </ul>
+                    </Link> 
                 </li>
                 <li className="nav-item">
-                    <Link href="tickets">
+                    <Link href="/admin/tickets">
                         <a className="nav-link px-0 align-middle">
                             <i className="fs-4 bi bi-ticket-detailed"></i> <span className="ms-1 d-none d-sm-inline">Tickets</span>
                         </a>
                     </Link>
                 </li>
                 <li className="nav-item">
-                    <Link href="invoices" >
+                    <Link href="/admin/invoices" >
                         <a className="nav-link px-0 align-middle ">
                             <i className="fs-4 bi bi-receipt"></i> <span className="ms-1 d-none d-sm-inline">Facturas</span>
                         </a>

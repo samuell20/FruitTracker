@@ -12,19 +12,29 @@ services:
       - ./Caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
          - db  
+         - web
+  web:
+    image: node
+    expose:
+      - 3000
+    volumes:
+      - ./Website:/app
+    working_dir: /app
+    command: bash -c "echo Estoy && npm install && npm update && npm run dev"
   api:
     image: golang:1.17
-    ports:
-      - 9000:9000
+    expose:
+      - 9000
     volumes:
       - ./Api:/usr/src/app
-    command: bash -c "cd /usr/src/app && go mod tidy && go mod download && go mod verify && go build -v -o /usr/local/bin/app ./cmd/api && app && echo executed"
+    command: bash -c "go mod tidy && go mod download && go mod verify && go build -v -o /usr/local/bin/app ./cmd/api && app && echo Starting server"
+    working_dir: /usr/src/app 
     depends_on:
       - db
   db:
     image: mysql
-    ports:
-      - 3306:3306
+    expose:
+      - 3306
     volumes:
       - ./Db:/var/lib/mysql
     environment:

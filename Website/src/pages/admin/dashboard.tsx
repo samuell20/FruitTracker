@@ -3,8 +3,8 @@ import type { NextPage } from 'next'
 
 const Dashboard: NextPage = () => {
   return (
-     <div className="bg-light h-100">
-       <h1>Dashboard</h1>
+     <div className="h-100">
+       <h1>Panel de control</h1> 
      </div> 
   )
 }

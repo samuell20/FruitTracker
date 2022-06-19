@@ -1,13 +1,12 @@
 import type { NextPage } from 'next'
 
 
-const Users: NextPage = () => {
+const Edit: NextPage = () => {
   return (
      <div>
-       <h1>Users</h1>
+       <h1>Productos</h1>
      </div> 
   )
 }
 
-export default Users 
-
+export default Edit 

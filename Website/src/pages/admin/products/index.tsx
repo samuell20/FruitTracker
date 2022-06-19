@@ -4,7 +4,7 @@ import type { NextPage } from 'next'
 const Products: NextPage = () => {
   return (
      <div>
-       <h1>Products</h1>
+       <h1>Productos</h1>
      </div> 
   )
 }
