@@ -6,7 +6,6 @@ import { userService } from 'Services'
 const Edit: NextPage = (params) => {
   return (
      <>
-       <h1>Usuarios</h1>
         <Alert />
         <AddEdit params={params}/>
      </> 
@@ -14,14 +13,9 @@ const Edit: NextPage = (params) => {
 }
 
 export async function getServerSideProps({ params }:any) {
-    //const user = await userService.getById(params.id);
-
+    const user = await userService.getById(params.id);
     return {
-        props: {
-          user:{
-            id:1
-          }
-        }
+        props: { user}
     }
 }
 

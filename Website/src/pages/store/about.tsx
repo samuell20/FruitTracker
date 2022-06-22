@@ -1,18 +1,20 @@
 import type { NextPage } from 'next'
 import Image from 'next/image'
 import FruitImg from '../../../public/Fruits.jpg'
+import FruitImg2 from '../../../public/aguacate.jpg'
+import ContactImg from '../../../public/quienessomos.jpg'
 import Styles from '../../../styles/store/About.module.css'
 
 const About: NextPage = () => {
   return (
     <>
       <section className="main-content">
-        <h3>Sobre nosotros</h3>
-        <div>
-          <h2>¿Quienes somos?</h2>
+        <h6>Inicio/Sobre nosotros</h6>
+        <div className="mt-3">
+          <h2>¿Quiénes somos?</h2>
           <div className="d-flex">
               <div className="w-50">
-                <Image src={FruitImg}/>
+                <Image src={ContactImg}/>
               </div>
               <div className="d-flex justify-content-center align-items-center w-50 p-5">
                 <p>
@@ -28,7 +30,7 @@ const About: NextPage = () => {
         </div> 
       </section> 
       <section className={Styles.section + ' d-flex text-light mt-5'}>
-        <div className="d-flex w-80 mt-3 mb-3">
+        <div className="d-flex w-70 mt-5 mb-5">
           <div className="w-50 d-flex flex-column justify-content-center align-items-center">
             <h3 className="text-center">Nuestros productos</h3>
             <p>
@@ -41,11 +43,11 @@ const About: NextPage = () => {
             </p>
           </div> 
           <div className="w-50 d-flex justify-content-center align-items-center">
-            <Image src={FruitImg} width={400} height={300}/> 
+            <Image src={FruitImg2} width={400} height={300}/> 
           </div>
         </div>
       </section>
-      <section className="main-content">
+      <section className="main-content mb-5">
         <h3 className="text-center mb-5" >Nuestras variedades</h3>
         <div className="d-flex justify-content-between align-items-center">
           <div className="w-25">

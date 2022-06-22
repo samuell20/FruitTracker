@@ -1,11 +1,12 @@
 import Link from "next/link";
 import styles from '../../../../styles/Header.module.css'
-
+import Image from 'next/image'
+import logo from '../../../../public/logo.png'
 const Header= () =>{
    return (
        <header>
             <div className={styles.sides}>
-                
+               <Image src={logo} width={70} height={40}/> 
             </div>
             <nav className={styles.navbar}>
                 <ul className={styles.links}>
@@ -16,7 +17,7 @@ const Header= () =>{
                 </ul>
             </nav>
             <div className={styles.sides}>
-               <a href=""><i className="bi bi-person fs-3 text-light"></i></a> 
+               <a href="/store/login"><i className="bi bi-person fs-3 text-light"></i></a> 
             </div>
        </header>
    ) 

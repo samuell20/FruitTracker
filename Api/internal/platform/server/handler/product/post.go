@@ -11,14 +11,13 @@ import (
 )
 
 type createRequest struct {
-	ID          int     `json:"id" binding:"required"`
 	Name        string  `json:"name" binding:"required"`
 	Description string  `json:"description" binding:"required"`
 	Unit        string  `json:"unit" binding:"required"`
 	Price       float64 `json:"price" binding:"required"`
-	TypeId      int     `json:"typeId" binding:"required"`
-	DiscountId  int     `json:"discountId" binding:"required"`
-	TaxId       int     `json:"taxId" binding:"required"`
+	TypeId      int     `json:"type_id" default:"0"`
+	DiscountId  int     `json:"discount_id" default:"0"`
+	TaxId       int     `json:"tax_id" default:"0"`
 }
 
 // CreateHandler returns an HTTP handler for Products creation.
@@ -31,7 +30,6 @@ func PostHandler(commandBus command.Bus) gin.HandlerFunc {
 		}
 
 		err := commandBus.Dispatch(ctx, product.NewProductCommand(
-			req.ID,
 			req.Name,
 			req.Description,
 			req.Unit,
@@ -45,7 +43,6 @@ func PostHandler(commandBus command.Bus) gin.HandlerFunc {
 			switch {
 			case errors.Is(err, model.ErrInvalidProductId),
 				errors.Is(err, model.ErrEmptyProductName):
-
 				ctx.JSON(http.StatusBadRequest, err.Error())
 				return
 			default:

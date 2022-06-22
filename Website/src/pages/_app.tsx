@@ -1,6 +1,7 @@
 import '../../styles/globals.css'
 import WebLayout from '../Common/Layout/WebLayout'
 import AdminLayout from '../Common/Layout/AdminLayout'
+import AdditionalLayout from '../Common/Layout/AdditionalLayout'
 import { useRouter } from 'next/router'
 
 
@@ -11,6 +12,10 @@ export default function MyApp({ Component, pageProps }: any ) {
   if(router.pathname.includes('/admin'))
   {
     Layout = AdminLayout
+  }
+  if(router.pathname.includes('/404') || router.pathname.includes('/store/login'))
+  {
+    Layout =AdditionalLayout
   }
   
   return (

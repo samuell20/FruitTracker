@@ -211,6 +211,7 @@ type ProductRepository interface {
 	GetAll() ([]Product, error)
 	Get(id int, ctx context.Context) (Product, error)
 	Update(ctx context.Context, Product Product) error
+	Delete(ctx context.Context, id int) error
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=ProductRepository
@@ -242,7 +243,15 @@ func NewProduct(id int, name string, description string, unit string, price floa
 		return Product{}, err
 	}
 
+	unitVO, err := NewProductUnit(unit)
+	if err != nil {
+		return Product{}, err
+	}
 	discount_idVO, err := NewProductDiscountId(discount_id)
+	if err != nil {
+		return Product{}, err
+	}
+	tax_idVO, err := NewProductTaxId(tax_id)
 	if err != nil {
 		return Product{}, err
 	}
@@ -251,9 +260,11 @@ func NewProduct(id int, name string, description string, unit string, price floa
 		id:          idVO,
 		name:        nameVO,
 		description: descriptionVO,
-		type_id:     type_idVO,
 		price:       priceVO,
+		unit:        unitVO,
+		type_id:     type_idVO,
 		discount_id: discount_idVO,
+		tax_id:      tax_idVO,
 	}
 	Product.Record(events.NewProductCreatedEvent(idVO.Value(), nameVO.String(), descriptionVO.String(), type_idVO.Value(), priceVO.Value(), discount_idVO.Value()))
 	return Product, nil

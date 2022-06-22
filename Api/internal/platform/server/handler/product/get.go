@@ -2,26 +2,32 @@ package product
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samuell20/FruitTracker/internal/operations/get/product"
 )
 
-type getRequest struct {
-	ID string `json:"id" binding:"required"`
-}
-
 // CreateHandler returns an HTTP handler for Products creation.
 func GetHandler(service interface{}) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		var req getRequest
-		if err := ctx.BindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, err.Error())
+		productService := service.(product.ProductQuery)
+		idString, err := ctx.Params.Get("id")
+		if err != true {
+			ctx.JSON(http.StatusBadRequest, err)
 			return
 		}
-
-		ctx.Status(http.StatusOK)
+		id, parseError := strconv.ParseInt(idString, 10, 8)
+		if parseError != nil {
+			ctx.JSON(http.StatusBadRequest, "Not a number")
+			return
+		}
+		product, productErr := productService.GetProductById(int(id), ctx)
+		if productErr != nil {
+			ctx.JSON(http.StatusBadRequest, "Error while fetching data")
+			return
+		}
+		ctx.JSON(http.StatusOK, product)
 	}
 }
 

@@ -27,7 +27,6 @@ export default function Alert({ id, fade }:{id:string,fade:boolean}) {
                     setAlerts((alerts: any[]) => {
                         // filter out alerts without 'keepAfterRouteChange' flag
                         const filteredAlerts = alerts.filter(x => x.keepAfterRouteChange);
-                        console.log("Tiene mensaje")
                         // remove 'keepAfterRouteChange' flag on the rest
                         filteredAlerts.forEach(x => delete x.keepAfterRouteChange);
                         return filteredAlerts;
@@ -98,8 +97,8 @@ export default function Alert({ id, fade }:{id:string,fade:boolean}) {
         <div className="container">
             <div className="m-3">
                 {alerts.map((alert: any, index: any) =>
-                    <div key={index} className={cssClasses(alert)}>
-                        <a className="close" onClick={() => removeAlert(alert)}>&times;</a>
+                    <div key={index} className={cssClasses(alert) + ' d-flex align-items-center'}>
+                        <button type="button" className="btn-close" aria-label="Close" onClick={() => removeAlert(alert)}></button>
                         <span dangerouslySetInnerHTML={{__html: alert.message}}></span>
                     </div>
                 )}

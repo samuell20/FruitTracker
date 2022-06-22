@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -28,7 +29,6 @@ func NewProductRepository(db *sql.DB, dbTimeout time.Duration) *ProductRepositor
 func (r *ProductRepository) Save(ctx context.Context, Product model.Product) error {
 	ProductSQLStruct := sqlbuilder.NewStruct(new(SqlProduct))
 	query, args := ProductSQLStruct.InsertInto(sqlProductTable, SqlProduct{
-		ID:          Product.ID().Value(),
 		Name:        Product.Name().String(),
 		Description: Product.Description().String(),
 		Unit:        Product.Unit().String(),
@@ -37,7 +37,7 @@ func (r *ProductRepository) Save(ctx context.Context, Product model.Product) err
 		DiscountId:  Product.DiscountId().Value(),
 		TaxId:       Product.TaxId().Value(),
 	}).Build()
-
+	log.Println(query)
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
@@ -55,11 +55,10 @@ func (r *ProductRepository) Get(id int, ctx context.Context) (model.Product, err
 	statement := ProductSQLStruct.SelectFrom(sqlProductTable)
 	statement.Where(statement.Equal("id", id))
 	query, args := statement.Build()
-	rows, _ := r.db.Query(query, args...)
-	defer rows.Close()
+	row := r.db.QueryRow(query, args...)
 
 	var product SqlProduct
-	rows.Scan(ProductSQLStruct.Addr(&product)...)
+	row.Scan(ProductSQLStruct.Addr(&product)...)
 	productScanned, err := model.NewProduct(
 		product.ID,
 		product.Name,
@@ -98,15 +97,16 @@ func (r *ProductRepository) GetAll() ([]model.Product, error) {
 //Upadate implements the model.ProductRepository interface.
 func (r *ProductRepository) Update(ctx context.Context, Product model.Product) error {
 	productSQLStruct := sqlbuilder.NewStruct(new(SqlProduct))
-	query, args := productSQLStruct.Update(sqlProductTable, SqlProduct{
+	statement := productSQLStruct.Update(sqlProductTable, SqlProduct{
 		ID:          Product.ID().Value(),
 		Name:        Product.Name().String(),
 		Description: Product.Description().String(),
 		TypeId:      Product.TypeId().Value(),
 		Price:       Product.Price().Value(),
 		DiscountId:  Product.DiscountId().Value(),
-	}).Build()
-
+	})
+	statement.Where(statement.Equal("id", Product.ID().Value()))
+	query, args := statement.Build()
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
@@ -115,5 +115,21 @@ func (r *ProductRepository) Update(ctx context.Context, Product model.Product) e
 		return fmt.Errorf("error trying to persist Product on database: %v", err)
 	}
 
+	return nil
+}
+
+func (r *ProductRepository) Delete(ctx context.Context, id int) error {
+	productSQLStruct := sqlbuilder.NewStruct(new(SqlProduct))
+	statement := productSQLStruct.DeleteFrom(sqlProductTable)
+	statement.Where(statement.Equal("id", id))
+	query, args := statement.Build()
+	rows, _ := r.db.Exec(query, args...)
+	nRows, err := rows.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if nRows == 0 {
+		return fmt.Errorf("No rows updated")
+	}
 	return nil
 }

@@ -25,15 +25,16 @@ func NewUserRepository(db *sql.DB, dbTimeout time.Duration) *UserRepository {
 }
 
 // Save implements the model.ProductRepository interface.
-func (r *UserRepository) Save(ctx context.Context, Product model.User) error {
-	/*ProductSQLStruct := sqlbuilder.NewStruct(new(SqlUser))
-	query, args := ProductSQLStruct.InsertInto(sqlUserTable, sqlProduct{
-		ID:          Product.ID().Value(),
-		Name:        Product.Name().String(),
-		Description: Product.Description().String(),
-		TypeId:      Product.TypeId().Value(),
-		Price:       Product.Price().Value(),
-		DiscountId:  Product.DiscountId().Value(),
+func (r *UserRepository) Save(ctx context.Context, User model.User) error {
+	userSQLStruct := sqlbuilder.NewStruct(new(sqlUser))
+	query, args := userSQLStruct.InsertInto(sqlUserTable, sqlUser{
+		Id:        User.Id().Value(),
+		Username:  User.Username().String(),
+		Email:     User.Email().String(),
+		Password:  User.Password().String(),
+		Role:      User.Role().String(),
+		CompanyId: User.CompanyId().Value(),
+		VatId:     User.VatId().Value(),
 	}).Build()
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
@@ -43,42 +44,50 @@ func (r *UserRepository) Save(ctx context.Context, Product model.User) error {
 	if err != nil {
 		return fmt.Errorf("Error trying to persist Product on database: %v", err)
 	}
-	*/
+
 	return nil
 }
 
 func (r *UserRepository) Get(id int, ctx context.Context) (model.User, error) {
-	/*ProductSQLStruct := sqlbuilder.NewStruct(new(sqlProduct))
-	statement := ProductSQLStruct.SelectFrom(sqlProductTable)
+	ProductSQLStruct := sqlbuilder.NewStruct(new(sqlUser))
+	statement := ProductSQLStruct.SelectFrom(sqlUserTable)
 	statement.Where(statement.Equal("id", id))
 	query, args := statement.Build()
-	rows, _ := r.db.Query(query, args...)
-	defer rows.Close()
-
-	var product model.Product
-	rows.Scan(ProductSQLStruct.Addr(&product)...)
-	log.Println("")
-	*/
-	return model.User{}, nil
+	row := r.db.QueryRow(query, args...)
+	var user sqlUser
+	row.Scan(ProductSQLStruct.Addr(&user)...)
+	scannedUser, err := model.NewUser(
+		user.Id,
+		user.Username,
+		user.CompanyId,
+		user.Email,
+		user.Password,
+		user.Role,
+		user.VatId)
+	if err != nil {
+		return model.User{}, fmt.Errorf("Error while getting the user")
+	}
+	return scannedUser, nil
 }
 
 //GetAll implements the model.ProductRepository interface.
 func (r *UserRepository) GetAll() ([]model.User, error) {
-	ProductSQLStruct := sqlbuilder.NewStruct(new(SqlUser))
+	ProductSQLStruct := sqlbuilder.NewStruct(new(sqlUser))
 	statement := ProductSQLStruct.SelectFrom(sqlUserTable)
 	query, args := statement.Build()
 	rows, _ := r.db.Query(query, args...)
 	defer rows.Close()
 	userList := []model.User{}
 	for rows.Next() {
-		var user SqlUser
+		var user sqlUser
 		err := rows.Scan(ProductSQLStruct.Addr(&user)...)
 		scannedUser, err := model.NewUser(
-			user.ID,
+			user.Id,
 			user.Username,
 			user.CompanyId,
 			user.Email,
 			user.Password,
+			user.Role,
 			user.VatId)
 		if err != nil {
 			return nil, fmt.Errorf("Error while getting the users")
@@ -90,17 +99,19 @@ func (r *UserRepository) GetAll() ([]model.User, error) {
 }
 
 //Upadate implements the model.ProductRepository interface.
-func (r *UserRepository) Update(ctx context.Context, Product model.User) error {
-	/*productSQLStruct := sqlbuilder.NewStruct(new(SqlUser))
-	query, args := productSQLStruct.Update(sqlUserTable, sqlProduct{
-		ID:          Product.ID().Value(),
-		Name:        Product.Name().String(),
-		Description: Product.Description().String(),
-		TypeId:      Product.TypeId().Value(),
-		Price:       Product.Price().Value(),
-		DiscountId:  Product.DiscountId().Value(),
-	}).Build()
-
+func (r *UserRepository) Update(ctx context.Context, User model.User) error {
+	userSQLStruct := sqlbuilder.NewStruct(new(sqlUser))
+	statement := userSQLStruct.Update(sqlUserTable, sqlUser{
+		Id:        User.Id().Value(),
+		Username:  User.Username().String(),
+		Email:     User.Email().String(),
+		Password:  User.Password().String(),
+		Role:      User.Role().String(),
+		CompanyId: User.CompanyId().Value(),
+		VatId:     User.VatId().Value(),
+	})
+	statement.Where(statement.Equal("id", User.Id().Value()))
+	query, args := statement.Build()
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	defer cancel()
 
@@ -108,6 +119,22 @@ func (r *UserRepository) Update(ctx context.Context, Product model.User) error {
 	if err != nil {
 		return fmt.Errorf("error trying to persist Product on database: %v", err)
 	}
-	*/
+
+	return nil
+}
+
+func (r *UserRepository) Delete(ctx context.Context, id int) error {
+	productSQLStruct := sqlbuilder.NewStruct(new(sqlUser))
+	statement := productSQLStruct.DeleteFrom(sqlUserTable)
+	statement.Where(statement.Equal("id", id))
+	query, args := statement.Build()
+	rows, _ := r.db.Exec(query, args...)
+	nRows, err := rows.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if nRows == 0 {
+		return fmt.Errorf("No rows updated")
+	}
 	return nil
 }

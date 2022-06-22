@@ -9,9 +9,15 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/samuell20/FruitTracker/internal/events"
-	"github.com/samuell20/FruitTracker/internal/operations/create/product"
+	create_product "github.com/samuell20/FruitTracker/internal/operations/create/product"
+	create_user "github.com/samuell20/FruitTracker/internal/operations/create/user"
+	delete_product "github.com/samuell20/FruitTracker/internal/operations/delete/product"
+	delete_user "github.com/samuell20/FruitTracker/internal/operations/delete/user"
 	product_query "github.com/samuell20/FruitTracker/internal/operations/get/product"
 	user_query "github.com/samuell20/FruitTracker/internal/operations/get/user"
+	update_product "github.com/samuell20/FruitTracker/internal/operations/update/product"
+	update_user "github.com/samuell20/FruitTracker/internal/operations/update/user"
+
 	"github.com/samuell20/FruitTracker/internal/platform/bus/inmemory"
 	"github.com/samuell20/FruitTracker/internal/platform/server"
 	product_repository "github.com/samuell20/FruitTracker/internal/platform/storage/mysql/product"
@@ -20,7 +26,7 @@ import (
 
 func Run() error {
 	var cfg config
-	err := envconfig.Process("MOOC", &cfg)
+	err := envconfig.Process("WEB", &cfg)
 	if err != nil {
 		return err
 	}
@@ -35,19 +41,42 @@ func Run() error {
 		commandBus = inmemory.NewCommandBus()
 		eventBus   = inmemory.NewEventBus()
 	)
-	queryServices := map[string]interface{}{}
+
+	//REPOSITORIES
 	productRepository := product_repository.NewProductRepository(db, cfg.DbTimeout)
-
-	queryServices["products"] = product_query.NewProductQuery(productRepository)
-	createProductService := product.NewProductService(productRepository, eventBus)
-
 	userRepository := user_repository.NewUserRepository(db, cfg.DbTimeout)
+
+	//QUERY SERVICES
+	queryServices := map[string]interface{}{}
+	queryServices["products"] = product_query.NewProductQuery(productRepository)
 	queryServices["users"] = user_query.NewUserQuery(userRepository)
 
-	createProductCommandHandler := product.NewProductCommandHandler(createProductService)
-	commandBus.Register(product.ProductCommandType, createProductCommandHandler)
+	//COMMAND SERVICES
+	createProductService := create_product.NewProductService(productRepository, eventBus)
+	deleteProductService := delete_product.NewDeleteProductService(productRepository, eventBus)
+	updateProductService := update_product.NewUpdateProductService(productRepository, eventBus)
+	createUserService := create_user.NewUserService(userRepository, eventBus)
+	deleteUserService := delete_user.NewDeleteUserService(userRepository, eventBus)
+	updateUserService := update_user.NewUpdateUserService(userRepository, eventBus)
 
-	eventBus.Subscribe(events.ProductCreatedEventType, product.NewTestOnProductCreated())
+	//HANDLERS
+	createProductCommandHandler := create_product.NewProductCommandHandler(createProductService)
+	deleteProductCommandHandler := delete_product.NewDeleteProductCommandHandler(deleteProductService)
+	updateProductCommandHandler := update_product.NewUpdateProductCommandHandler(updateProductService)
+	createUserCommandHandler := create_user.NewUserCommandHandler(createUserService)
+	deleteUserCommandCommand := delete_user.NewDeleteUserCommandHandler(deleteUserService)
+	updateUserCommandHandler := update_user.NewUpdateUserCommandHandler(updateUserService)
+
+	//COMMAND REGISTRATION
+	commandBus.Register(create_product.ProductCommandType, createProductCommandHandler)
+	commandBus.Register(delete_product.DeleteProductCommandType, deleteProductCommandHandler)
+	commandBus.Register(update_product.UpdateProductCommandType, updateProductCommandHandler)
+
+	commandBus.Register(create_user.UserCommandType, createUserCommandHandler)
+	commandBus.Register(delete_user.DeleteUserCommandType, deleteUserCommandCommand)
+	commandBus.Register(update_user.UpdateUserCommandType, updateUserCommandHandler)
+	//EVENT SUBSCRIPTION
+	eventBus.Subscribe(events.ProductCreatedEventType, create_product.NewTestOnProductCreated())
 
 	ctx, srv := server.New(context.Background(), cfg.Host, cfg.Port, cfg.ShutdownTimeout, commandBus, queryServices)
 	return srv.Run(ctx)

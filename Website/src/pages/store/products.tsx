@@ -11,7 +11,7 @@ const Products: NextPage = ({product_data}:any) => {
                 <h5 className="card-title">{item.name}</h5>
                 <p className="card-text">
                     {item.description} <br /> 
-                    {item.price} {item.currency} <br />    
+                    {item.price}€ {item.unit} <br />    
                 </p>
               </div>
 
@@ -20,8 +20,9 @@ const Products: NextPage = ({product_data}:any) => {
     ))
   return (
      <div className="main-content">
-       <h1>Productos</h1>
-       <div className="d-flex flex-wrap justify-content-between">
+       <h6 className="mb-3">Inicio/Productos</h6>
+       <h2>Catalogo de productos</h2>
+       <div className="mt-5 d-flex flex-wrap justify-content-between">
          {products}
        </div>
      </div> 
@@ -29,16 +30,15 @@ const Products: NextPage = ({product_data}:any) => {
 }
 
 export async function getStaticProps() {
-  const res = await fetch('http://127.0.0.1:4000/products')
+  const res = await fetch('http://fruittrackerapp.tk:80/api/products')
   const product_data = await res.json()
+  console.log()
   return {
     props: {
       product_data,
     },
-    // Next.js will attempt to re-generate the page:
-    // - When a request comes in
-    // - At most once every 10 seconds
-    revalidate: 10, // In seconds
+    
+    revalidate: 10, 
   }
 }
 export default Products

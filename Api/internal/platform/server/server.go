@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/samuell20/FruitTracker/internal/platform/server/handler/product"
 	"github.com/samuell20/FruitTracker/internal/platform/server/handler/user"
@@ -39,18 +40,22 @@ func New(ctx context.Context, host string, port uint, shutdownTimeout time.Durat
 }
 
 func (s *Server) registerRoutes() {
-	s.engine.Use(recovery.Middleware(), logging.Middleware())
+	s.engine.Use(cors.Default())
+	group := s.engine.Group("/api")
+	group.Use(recovery.Middleware(), logging.Middleware())
 
 	//Product handlers
-	s.engine.GET("/products", product.GetAllHandler(s.query_services["products"]))
-	s.engine.POST("/products", product.PostHandler(s.commandBus))
-	s.engine.GET("/products/{id}", product.GetHandler(s.query_services["products"]))
-	s.engine.PUT("/products/{id}", product.PutHandler(s.commandBus))
+	group.GET("/products", product.GetAllHandler(s.query_services["products"]))
+	group.POST("/products", product.PostHandler(s.commandBus))
+	group.DELETE("/products/:id", product.DeleteHandler(s.commandBus))
+	group.GET("/products/:id", product.GetHandler(s.query_services["products"]))
+	group.PUT("/products/:id", product.PutHandler(s.commandBus))
 	//User handlers
-	s.engine.GET("/users", user.GetAllHandler(s.query_services["users"]))
-	s.engine.POST("/users", user.PostHandler(s.commandBus))
-	s.engine.GET("/users/{id}", user.GetHandler(s.query_services["users"]))
-	s.engine.PUT("/users/{id}", user.PutHandler(s.commandBus))
+	group.GET("/users", user.GetAllHandler(s.query_services["users"]))
+	group.POST("/users", user.PostHandler(s.commandBus))
+	group.DELETE("/users/:id", user.DeleteHandler(s.commandBus))
+	group.GET("/users/:id", user.GetHandler(s.query_services["users"]))
+	group.PUT("/users/:id", user.PutHandler(s.commandBus))
 	//Order handlers
 	s.engine.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "ROUTE_NOT_FOUND", "message": "Route not found"})
@@ -70,9 +75,9 @@ func (s *Server) Run(ctx context.Context) error {
 			log.Fatal("server shut down", err)
 		}
 	}()
-	log.Println("Servidor ejecutado")
+	log.Println("Waiting for requests...")
 	<-ctx.Done()
-	log.Println("Servidor esperando")
+	log.Println("Server is shutting down...")
 	ctxShutDown, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
 	defer cancel()
 

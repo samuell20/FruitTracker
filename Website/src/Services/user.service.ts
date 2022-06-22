@@ -8,7 +8,7 @@ export const userService = {
     delete: _delete
 };
 
-const baseUrl = `http://localhost:3000/api/users`;
+const baseUrl = `http://fruittrackerapp.tk:80/api/users`;
 
 function getAll() {
     return FetchWrapper.get(baseUrl);

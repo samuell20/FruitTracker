@@ -88,6 +88,23 @@ func (u UserPassword) String() string {
 	return u.value
 }
 
+var ErrInvalidRole = errors.New("Invalid user role")
+
+type UserRole struct {
+	value string
+}
+
+func NewRole(role string) (UserRole, error) {
+
+	return UserRole{
+		value: role,
+	}, nil
+}
+
+func (u UserRole) String() string {
+	return u.value
+}
+
 var ErrInvalidVatId = errors.New("Invalid user vat_id")
 
 type UserVatId struct {
@@ -111,6 +128,7 @@ type User struct {
 	companyId UserCompanyId
 	email     UserEmail
 	password  UserPassword
+	role      UserRole
 	vatId     UserVatId
 	events    []event.Event
 }
@@ -121,9 +139,10 @@ type UserRepository interface {
 	GetAll() ([]User, error)
 	Get(id int, ctx context.Context) (User, error)
 	Update(ctx context.Context, User User) error
+	Delete(ctx context.Context, id int) error
 }
 
-func NewUser(id int, username string, companyId int, email string, password string, vatId int) (User, error) {
+func NewUser(id int, username string, companyId int, email string, password string, role string, vatId int) (User, error) {
 
 	idVO, err := NewUserId(id)
 	if err != nil {
@@ -142,6 +161,10 @@ func NewUser(id int, username string, companyId int, email string, password stri
 	if err != nil {
 		return User{}, err
 	}
+	roleVo, err := NewRole(role)
+	if err != nil {
+		return User{}, err
+	}
 	passwordVo, err := NewPassword(password)
 	if err != nil {
 		return User{}, err
@@ -157,6 +180,7 @@ func NewUser(id int, username string, companyId int, email string, password stri
 		companyId: companyIdVo,
 		email:     emailVo,
 		password:  passwordVo,
+		role:      roleVo,
 		vatId:     vatIdVo,
 	}, nil
 }
@@ -167,6 +191,7 @@ func (U User) MarshalJSON() ([]byte, error) {
 		Username  string `json:"username"`
 		Email     string `json:"email"`
 		Password  string `json:"password"`
+		Role      string `json:"role"`
 		CompanyId int    `json:"company_id"`
 		VatId     int    `json:"vat_id"`
 	}{
@@ -174,6 +199,7 @@ func (U User) MarshalJSON() ([]byte, error) {
 		Username:  U.Username().String(),
 		Email:     U.Email().String(),
 		Password:  U.Password().String(),
+		Role:      U.Role().String(),
 		CompanyId: U.CompanyId().Value(),
 		VatId:     U.VatId().Value(),
 	})
@@ -193,6 +219,10 @@ func (u User) Email() UserEmail {
 
 func (u User) Password() UserPassword {
 	return u.password
+}
+
+func (u User) Role() UserRole {
+	return u.role
 }
 
 func (u User) CompanyId() UserCompanyId {

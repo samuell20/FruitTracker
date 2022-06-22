@@ -1,10 +1,11 @@
 import type { NextPage } from 'next'
-
-
-const Add: NextPage = () => {
+import Alert from '../../../Common/Alert'
+import { AddEdit } from 'Common/Products'
+const Add: NextPage = (params) => {
   return (
      <div>
-       <h1>Productos</h1>
+      <Alert /> 
+      <AddEdit params={params} />
      </div> 
   )
 }

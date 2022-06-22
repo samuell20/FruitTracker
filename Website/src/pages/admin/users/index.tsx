@@ -28,24 +28,24 @@ const Users: NextPage = () => {
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th style={{ width: '30%' }}>Name</th>
+                        <th style={{ width: '30%' }}>Nombre usuario</th>
                         <th style={{ width: '30%' }}>Email</th>
-                        <th style={{ width: '30%' }}>Role</th>
+                        <th style={{ width: '30%' }}>Rol</th>
                         <th style={{ width: '10%' }}> 
-                          <Link href="users/add">
+                          <Link href="/admin/users/add">
                             <a className="btn btn-sm btn-success mb-2">Add User</a> 
                           </Link>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users && users.map((user: { id: Number; title: string; firstName: string; lastName: string ; email: string ; role: string ; isDeleting: boolean | undefined; }) =>
-                        <tr>
-                            <td>{user.title} {user.firstName} {user.lastName}</td>
+                    {users && users.map((user: { id: Number; username: string; email: string ; role: string ; isDeleting: boolean | undefined; }) =>
+                        <tr key={user.id.toString()}>
+                            <td>{user.username} </td>
                             <td>{user.email}</td>
                             <td>{user.role}</td>
                             <td style={{ whiteSpace: 'nowrap' }}>
-                                <Link href={`/users/edit/${user.id}`} >
+                                <Link href={`/admin/users/edit/${user.id}`} >
                                   <a className="btn btn-sm btn-primary mr-1">
                                     Edit
                                   </a>
